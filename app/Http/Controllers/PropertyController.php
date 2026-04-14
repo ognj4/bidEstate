@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use App\Models\PropertyImage;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class PropertyController extends Controller
 {
+    use AuthorizesRequests;
+
     public function show(Property $property)
     {
         $this->authorize('view', $property);
@@ -27,6 +30,7 @@ class PropertyController extends Controller
 
     public function store(Request $request)
     {
+
         $this->authorize('create', Property::class);
 
         $validated = $request->validate([

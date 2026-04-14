@@ -8,6 +8,8 @@ use App\Http\Controllers\NotificationController;
 // use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 // Javne rute — svi mogu vidjeti
 Route::get('/', [AuctionController::class, 'index'])->name('home');
@@ -15,8 +17,21 @@ Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.ind
 Route::get('/auctions/{auction}', [AuctionController::class, 'show'])->name('auctions.show');
 Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
 
+// Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
+
 // Zaštićene rute — mora biti ulogovan i verifikovan email
+
+// dodaj 'verifed' pre deploya
 Route::middleware(['auth', 'verified'])->group(function () {
+
+
+    Route::post('/logout', function (Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/');
+    })->name('logout');
+
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

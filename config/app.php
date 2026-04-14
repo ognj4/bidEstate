@@ -2,6 +2,8 @@
 
 return [
 
+    App\Providers\AppServiceProvider::class,
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

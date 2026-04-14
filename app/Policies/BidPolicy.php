@@ -9,9 +9,7 @@ class BidPolicy
 {
     public function create(User $user, Auction $auction): bool
     {
-        if (! $user->hasVerifiedEmail()) {
-            return false;
-        }
+        $auction->loadMissing('property');
 
         if ($user->id === $auction->property->user_id) {
             return false;

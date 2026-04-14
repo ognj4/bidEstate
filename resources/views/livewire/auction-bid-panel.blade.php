@@ -67,7 +67,7 @@
                                 @csrf
                                 <button type="submit"
                                     class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
-                                    onclick="return confirm('Da li ste sigurni da zelite kupiti po cijeni €{{ number_format($auction->buy_now_price, 0, \",\", \".\") }}?')">
+                                    onclick="return confirm('Da li ste sigurni da zelite kupiti odmah?')">
                                     Kupi odmah — €{{ number_format($auction->buy_now_price, 0, ',', '.') }}
                                 </button>
                             </form>

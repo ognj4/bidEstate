@@ -3,15 +3,12 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        {{-- Lijeva strana — detalji nekretnine --}}
         <div class="lg:col-span-2 space-y-6">
 
-            {{-- Slike --}}
-            <div class="bg-white rounded-xl overflow-hidden shadow-sm" x-data="{ active: 0 }">
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm"
+                 x-data="{ active: 0, images: {{ json_encode($auction->property->images->pluck('path')->map(fn($p) => asset('storage/'.$p))) }} }">
                 @if($auction->property->images->count())
-                    <img :src="images[active]"
-                         class="w-full h-96 object-cover"
-                         x-init="images = {{ json_encode($auction->property->images->pluck('path')->map(fn($p) => asset('storage/'.$p))) }}">
+                    <img :src="images[active]" class="w-full h-96 object-cover">
                     @if($auction->property->images->count() > 1)
                         <div class="flex gap-2 p-3 overflow-x-auto">
                             @foreach($auction->property->images as $i => $image)
@@ -25,7 +22,6 @@
                 @endif
             </div>
 
-            {{-- Info o nekretnini --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex items-start justify-between mb-4">
                     <div>
@@ -44,10 +40,9 @@
                     </span>
                 </div>
 
-                {{-- Karakteristike --}}
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-y border-gray-100 mb-4">
                     <div class="text-center">
-                        <p class="text-xs text-gray-400">Površina</p>
+                        <p class="text-xs text-gray-400">Povrsina</p>
                         <p class="font-semibold">{{ $auction->property->area_m2 }} m²</p>
                     </div>
                     @if($auction->property->rooms)
@@ -73,7 +68,6 @@
                 <p class="text-gray-700 leading-relaxed">{{ $auction->property->description }}</p>
             </div>
 
-            {{-- Lista ponuda --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h2 class="font-semibold text-gray-900 mb-4">
                     Ponude ({{ $auction->bids->count() }})
@@ -89,12 +83,11 @@
                         </span>
                     </div>
                 @empty
-                    <p class="text-gray-400 text-sm">Još nema ponuda. Budite prvi!</p>
+                    <p class="text-gray-400 text-sm">Nema ponuda. Budite prvi!</p>
                 @endforelse
             </div>
         </div>
 
-        {{-- Desna strana — licitiranje --}}
         <div class="space-y-4">
             @livewire('auction-bid-panel', ['auction' => $auction])
         </div>

@@ -13,7 +13,7 @@
                 </span>
             @endif
 
-            <p class="text-sm text-gray-400">Trenutna cijena</p>
+            <p class="text-sm text-gray-400">Trenutna cena</p>
             <p class="text-4xl font-bold text-indigo-600 my-2">
                 €{{ number_format($auction->current_price, 0, ',', '.') }}
             </p>
@@ -38,7 +38,7 @@
             </div>
         @endif
 
-        {{-- Forma za licitiranje --}}
+        {{-- forma za licitiranje --}}
         @if($auction->isActive())
             @auth
                 @if(auth()->id() !== $auction->property->user_id)
@@ -86,17 +86,17 @@
             @endauth
         @endif
 
-        {{-- Pobjednik --}}
+        {{-- pobednik --}}
         @if($auction->isFinished() && $auction->winner)
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
-                <p class="text-sm text-yellow-700 font-medium">Pobjednik aukcije</p>
+                <p class="text-sm text-yellow-700 font-medium">Pobednik aukcije</p>
                 <p class="font-bold text-gray-900 mt-1">{{ $auction->winner->name }}</p>
                 <p class="text-indigo-600 font-semibold">€{{ number_format($auction->current_price, 0, ',', '.') }}</p>
             </div>
         @endif
     </div>
 
-    {{-- Favorit dugme --}}
+    {{-- favorit dugme --}}
     @auth
         <form action="{{ route('favorites.toggle', $auction->property) }}" method="POST">
             @csrf

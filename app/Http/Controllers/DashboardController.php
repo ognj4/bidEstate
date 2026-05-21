@@ -34,7 +34,7 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        // Nepročitane notifikacije
+        // Neprocitane notifikacije
         $notifications = $user->notifications()
             ->whereNull('read_at')
             ->latest('created_at')

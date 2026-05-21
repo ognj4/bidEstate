@@ -22,7 +22,7 @@ class PropertyImage extends Model
         return $this->belongsTo(Property::class);
     }
 
-    // Vraća pun URL do slike
+    //  pun URL do slike
     public function getUrlAttribute(): string
     {
         return asset('storage/' . $this->path);

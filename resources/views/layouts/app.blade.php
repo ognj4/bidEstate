@@ -62,6 +62,19 @@
                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                     Dashboard
                                 </a>
+
+                                <a href="{{ route('profile.edit') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        Moj profil
+                                </a>
+
+                                @if(auth()->user()->isAdmin())
+                                    <a href="{{ route('admin.dashboard') }}"
+                                    class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50">
+                                        Admin panel
+                                    </a>
+                                @endif
+
                                 @if(auth()->user()->isSeller())
                                     <a href="{{ route('properties.create') }}"
                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">

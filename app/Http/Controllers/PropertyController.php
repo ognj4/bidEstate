@@ -45,15 +45,17 @@ class PropertyController extends Controller
             'address'      => ['required', 'string', 'max:255'],
             'year_built'   => ['nullable', 'integer', 'min:1800', 'max:' . date('Y')],
             'images'       => ['required', 'array', 'min:1'],
-            'images.*'     => ['image', 'max:5120'], // max 5MB po slici
+            'images.*'     => ['image', 'max:5120'],
         ]);
 
-        $property = $request->user()->properties()->create($validated);
+        $property = $request->user()->properties()->create([
+            ...$validated,
+            'status' => 'active',
+        ]);
 
-        // Upload slika
+
         foreach ($request->file('images') as $index => $image) {
             $path = $image->store('properties', 'public');
-
             $property->images()->create([
                 'path'       => $path,
                 'is_primary' => $index === 0,
@@ -61,9 +63,10 @@ class PropertyController extends Controller
             ]);
         }
 
+        // Nakon kreiranja oglasa, redirect na kreiranje aukcije
         return redirect()
-            ->route('properties.show', $property)
-            ->with('success', 'Oglas je uspješno kreiran!');
+            ->route('auctions.create', ['property' => $property->id])
+            ->with('success', 'Oglas kreiran! Sada kreirajte aukciju.');
     }
 
     public function edit(Property $property)
@@ -90,20 +93,37 @@ class PropertyController extends Controller
             'city'         => ['required', 'string', 'max:100'],
             'address'      => ['required', 'string', 'max:255'],
             'year_built'   => ['nullable', 'integer', 'min:1800', 'max:' . date('Y')],
+            'images'       => ['nullable', 'array'],
+            'images.*'     => ['image', 'max:5120'],
         ]);
 
         $property->update($validated);
 
+        // Upload novih slika ako postoje
+        if ($request->hasFile('images')) {
+            $lastOrder = $property->images()->max('order') ?? 0;
+
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('properties', 'public');
+
+                $property->images()->create([
+                    'path'       => $path,
+                    'is_primary' => $property->images()->count() === 0 && $index === 0,
+                    'order'      => $lastOrder + $index + 1,
+                ]);
+            }
+        }
+
         return redirect()
             ->route('properties.show', $property)
-            ->with('success', 'Oglas je uspješno ažuriran!');
+            ->with('success', 'Oglas je uspesno azuriran!');
     }
 
     public function destroy(Property $property)
     {
         $this->authorize('delete', $property);
 
-        // Obrisi slike sa diska
+        // Obrisi slike
         foreach ($property->images as $image) {
             Storage::disk('public')->delete($image->path);
         }

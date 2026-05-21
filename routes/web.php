@@ -10,12 +10,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
-// Javne rute bez parametara — moraju biti prve
 Route::get('/', [AuctionController::class, 'index'])->name('home');
 Route::get('/auctions', [AuctionController::class, 'index'])->name('auctions.index');
 
-// Zasticene rute
-//verifed nalog!!!
 Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', function (Request $request) {
@@ -41,9 +38,24 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+
+
+    // Admin rute
+    Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AdminController::class, 'index'])->name('dashboard');
+        Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users');
+        Route::patch('/users/{user}/role', [\App\Http\Controllers\Admin\AdminUserController::class, 'updateRole'])->name('users.role');
+        Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
+        Route::get('/properties', [\App\Http\Controllers\Admin\AdminPropertyController::class, 'index'])->name('properties');
+        Route::delete('/properties/{property}', [\App\Http\Controllers\Admin\AdminPropertyController::class, 'destroy'])->name('properties.destroy');
+        Route::get('/auctions', [\App\Http\Controllers\Admin\AdminAuctionController::class, 'index'])->name('auctions');
+        Route::patch('/auctions/{auction}/cancel', [\App\Http\Controllers\Admin\AdminAuctionController::class, 'cancel'])->name('auctions.cancel');
+    });
 });
 
-// Javne rute SA parametrima — moraju biti na dnu!
 Route::get('/auctions/{auction}', [AuctionController::class, 'show'])->name('auctions.show');
 Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
 

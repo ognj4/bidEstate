@@ -25,7 +25,7 @@ class BidController extends Controller
             'amount'  => $validated['amount'],
         ]);
 
-        // Ažuriraj trenutnu cijenu aukcije
+        // Ažuriraj trenutnu cenu aukcije
         $auction->update(['current_price' => $validated['amount']]);
 
         return back()->with('success', 'Vaša ponuda je prihvaćena!');
@@ -54,6 +54,6 @@ class BidController extends Controller
 
         return redirect()
             ->route('auctions.show', $auction)
-            ->with('success', 'Cestitamo! Uspjesno ste kupili nekretninu.');
+            ->with('success', 'Cestitamo! Uspesno ste kupili nekretninu.');
     }
 }

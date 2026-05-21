@@ -2,6 +2,13 @@
     @section('title', 'Nova aukcija')
 
     <div class="max-w-2xl mx-auto">
+
+        @if(session('success'))
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <h1 class="text-2xl font-bold text-gray-900 mb-8">Kreiraj aukciju</h1>
 
         <form action="{{ route('auctions.store') }}" method="POST" class="space-y-6">
@@ -13,8 +20,7 @@
                 @if($properties->isEmpty())
                     <div class="text-center py-6">
                         <p class="text-gray-400 mb-3">Nemate nekretnina dostupnih za aukciju</p>
-                        <a href="{{ route('properties.create') }}"
-                           class="text-indigo-600 hover:underline text-sm">
+                        <a href="{{ route('properties.create') }}" class="text-indigo-600 hover:underline text-sm">
                             Kreirajte oglas prvo
                         </a>
                     </div>
@@ -43,50 +49,42 @@
 
             @if($properties->isNotEmpty())
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4">
-                    <h2 class="font-semibold text-gray-900 border-b border-gray-100 pb-3">Podešavanja aukcije</h2>
+                    <h2 class="font-semibold text-gray-900 border-b border-gray-100 pb-3">Podesavanja aukcije</h2>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Početna cijena (€)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pocetna cena (€)</label>
                             <input type="number" name="start_price" value="{{ old('start_price') }}"
                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500"
                                    placeholder="50000">
-                            @error('start_price')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            @error('start_price') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Minimalni korak (€)</label>
                             <input type="number" name="min_increment" value="{{ old('min_increment', 500) }}"
                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500"
                                    placeholder="500">
-                            @error('min_increment')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                            @error('min_increment') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Buy Now cijena (€)
+                            Buy Now cena (€)
                             <span class="text-gray-400 font-normal">— opciono</span>
                         </label>
                         <input type="number" name="buy_now_price" value="{{ old('buy_now_price') }}"
                                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500"
-                               placeholder="Ostavite prazno ako ne želite ovu opciju">
-                        @error('buy_now_price')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                               placeholder="Ostavite prazno ako ne zelite ovu opciju">
+                        @error('buy_now_price') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Datum i vrijeme završetka</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Datum i vreme zavrsetka</label>
                         <input type="datetime-local" name="ends_at" value="{{ old('ends_at') }}"
                                min="{{ now()->addHour()->format('Y-m-d\TH:i') }}"
                                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500">
-                        @error('ends_at')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        @error('ends_at') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                 </div>
 
@@ -97,12 +95,10 @@
                     </button>
                     <a href="{{ route('dashboard') }}"
                        class="border border-gray-200 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-50 transition">
-                        Otkaži
+                        Otkazi
                     </a>
                 </div>
             @endif
-
         </form>
     </div>
 </x-app-layout>
-

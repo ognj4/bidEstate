@@ -20,7 +20,7 @@ class FavoriteController extends Controller
             $message = 'Uklonjeno iz favorita.';
         } else {
             $user->favorites()->create(['property_id' => $property->id]);
-            $message = 'Dodano u favorite!';
+            $message = 'Dodato u favorite!';
         }
 
         return back()->with('success', $message);

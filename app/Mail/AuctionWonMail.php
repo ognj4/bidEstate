@@ -21,7 +21,7 @@ class AuctionWonMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Cestitamo! Pobjedili ste aukciju — ' . $this->auction->property->title,
+            subject: 'Cestitamo! Pobedili ste aukciju — ' . $this->auction->property->title,
         );
     }
 

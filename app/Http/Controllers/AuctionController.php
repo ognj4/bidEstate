@@ -60,9 +60,8 @@ class AuctionController extends Controller
             'ends_at'       => ['required', 'date', 'after:+1 hour'],
         ]);
 
-        // Provjeri da je nekretnina vlasnikova
         $property = Property::findOrFail($validated['property_id']);
-        abort_if($property->user_id !== auth()->id(), 403);
+        abort_if($property->user_id !== $request->user()->id, 403);
 
         $auction = Auction::create([
             ...$validated,
@@ -72,7 +71,7 @@ class AuctionController extends Controller
 
         return redirect()
             ->route('auctions.show', $auction)
-            ->with('success', 'Aukcija je uspjesno kreirana!');
+            ->with('success', 'Aukcija je uspesno kreirana!');
     }
 
     public function edit(Auction $auction)

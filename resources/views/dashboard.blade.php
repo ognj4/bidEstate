@@ -15,7 +15,7 @@
     @if($notifications->count())
         <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 mb-8">
             <div class="flex items-center justify-between mb-3">
-                <h2 class="font-semibold text-indigo-900">Obavještenja</h2>
+                <h2 class="font-semibold text-indigo-900">Obaveštenja</h2>
                 <form action="{{ route('notifications.readAll') }}" method="POST">
                     @csrf
                     @method('PATCH')
@@ -54,7 +54,7 @@
                                 {{ $auction->property->title }}
                             </a>
                             <div class="flex justify-between items-center text-sm mb-3">
-                                <span class="text-gray-500">Trenutna cijena</span>
+                                <span class="text-gray-500">Trenutna cena</span>
                                 <span class="font-bold text-indigo-600">
                                     €{{ number_format($auction->current_price, 0, ',', '.') }}
                                 </span>
@@ -142,7 +142,7 @@
                                         <div class="flex items-center justify-end gap-2">
                                             <a href="{{ route('properties.edit', $property) }}"
                                                class="text-xs text-gray-500 hover:text-indigo-600">
-                                                Izmijeni
+                                                Izmeni
                                             </a>
                                             @if(!$property->hasActiveAuction())
                                                 <form action="{{ route('properties.destroy', $property) }}" method="POST"
@@ -182,7 +182,7 @@
                             <tr>
                                 <th class="text-left px-6 py-3 text-gray-500 font-medium">Nekretnina</th>
                                 <th class="text-left px-6 py-3 text-gray-500 font-medium">Moja ponuda</th>
-                                <th class="text-left px-6 py-3 text-gray-500 font-medium">Trenutna cijena</th>
+                                <th class="text-left px-6 py-3 text-gray-500 font-medium">Trenutna cena</th>
                                 <th class="text-left px-6 py-3 text-gray-500 font-medium">Status</th>
                                 <th class="px-6 py-3"></th>
                             </tr>
@@ -212,7 +212,7 @@
                                             @endif
                                         @elseif($bid->auction->winner_id === auth()->id())
                                             <span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
-                                                Pobijedio
+                                                Pobedio
                                             </span>
                                         @else
                                             <span class="px-2 py-1 bg-gray-100 text-gray-500 rounded-full text-xs font-medium">

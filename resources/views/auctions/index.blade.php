@@ -22,7 +22,7 @@
     @else
         <div class="text-center py-20 text-gray-400">
             <p class="text-xl mb-2">Trenutno nema aktivnih aukcija</p>
-            <p class="text-sm">Provjerite ponovo uskoro</p>
+            <p class="text-sm">Proverite ponovo uskoro</p>
         </div>
     @endif
 </x-app-layout>

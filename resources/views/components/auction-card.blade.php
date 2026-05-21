@@ -2,7 +2,7 @@
 
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
 
-    {{-- Slika --}}
+    {{-- slika --}}
     <a href="{{ route('auctions.show', $auction) }}">
         @if($auction->property->primaryImage)
             <img src="{{ asset('storage/' . $auction->property->primaryImage->path) }}"
@@ -16,7 +16,7 @@
     </a>
 
     <div class="p-4">
-        {{-- Tip i grad --}}
+        {{-- tip i grad --}}
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full font-medium">
                 {{ ucfirst($auction->property->type) }}
@@ -24,13 +24,13 @@
             <span class="text-xs text-gray-500">{{ $auction->property->city }}</span>
         </div>
 
-        {{-- Naslov --}}
+        {{-- naslov --}}
         <a href="{{ route('auctions.show', $auction) }}"
            class="font-semibold text-gray-900 hover:text-indigo-600 line-clamp-2 block mb-3">
             {{ $auction->property->title }}
         </a>
 
-        {{-- Detalji --}}
+        {{-- detalji --}}
         <div class="flex items-center gap-3 text-xs text-gray-500 mb-4">
             @if($auction->property->area_m2)
                 <span>{{ $auction->property->area_m2 }} m²</span>
@@ -40,11 +40,11 @@
             @endif
         </div>
 
-        {{-- Cijena i timer --}}
+        {{-- cena  timer --}}
         <div class="border-t border-gray-50 pt-3">
             <div class="flex justify-between items-end">
                 <div>
-                    <p class="text-xs text-gray-400">Trenutna cijena</p>
+                    <p class="text-xs text-gray-400">Trenutna cena</p>
                     <p class="text-lg font-bold text-indigo-600">
                         €{{ number_format($auction->current_price, 0, ',', '.') }}
                     </p>

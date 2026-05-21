@@ -60,7 +60,7 @@
                 @can('update', $property)
                     <a href="{{ route('properties.edit', $property) }}"
                        class="border border-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition text-sm">
-                        Izmijeni
+                        Izmeni
                     </a>
                 @endcan
             </div>

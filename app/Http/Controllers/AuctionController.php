@@ -41,7 +41,7 @@ class AuctionController extends Controller
         // Samo nekretnine koje nemaju aukciju
         $properties = $request->user()
             ->properties()
-            ->where('status', 'active')
+            ->where('status', 'draft')
             ->whereDoesntHave('auction')
             ->get();
 

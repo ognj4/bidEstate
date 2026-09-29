@@ -44,10 +44,8 @@ class CloseExpiredAuctions implements ShouldQueue
 
             $auction->property->update(['status' => 'sold']);
 
-            if ($winner->email_notifications) {
-                // Mail::to($winner->email)
-                //     ->send(new AuctionWonMail($auction, $highestBid->amount));
-            }
+            Mail::to('bidestate1@gmail.com')
+                ->send(new AuctionWonMail($auction, $highestBid->amount));
 
             Notification::create([
                 'user_id' => $winner->id,
@@ -66,10 +64,8 @@ class CloseExpiredAuctions implements ShouldQueue
                 ->unique('user_id');
 
             foreach ($losers as $bid) {
-                if ($bid->user->email_notifications) {
-                    // Mail::to($bid->user->email)
-                    //     ->send(new AuctionLostMail($auction));
-                }
+                Mail::to('bidestate1@gmail.com')
+                    ->send(new AuctionLostMail($auction));
 
                 Notification::create([
                     'user_id' => $bid->user->id,

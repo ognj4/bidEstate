@@ -49,7 +49,7 @@ class PropertyController extends Controller
         ]);
 
         $property = $request->user()->properties()->create([
-            ...$validated,
+            ...collect($validated)->except('images')->toArray(),
             'status' => 'draft',
         ]);
 
@@ -97,7 +97,7 @@ class PropertyController extends Controller
             'images.*'     => ['image', 'max:5120'],
         ]);
 
-        $property->update($validated);
+        $property->update(collect($validated)->except('images')->toArray());
 
         // Upload novih slika ako postoje
         if ($request->hasFile('images')) {

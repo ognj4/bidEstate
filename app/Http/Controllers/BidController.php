@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AuctionWonMail;
 use App\Models\Auction;
 use App\Models\Bid;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class BidController extends Controller
 {
@@ -25,7 +28,6 @@ class BidController extends Controller
             'amount'  => $validated['amount'],
         ]);
 
-        // Ažuriraj trenutnu cenu aukcije
         $auction->update(['current_price' => $validated['amount']]);
 
         return back()->with('success', 'Vaša ponuda je prihvaćena!');
@@ -51,6 +53,19 @@ class BidController extends Controller
         ]);
 
         $auction->property->update(['status' => 'sold']);
+
+        Mail::to('bidestate1@gmail.com')
+            ->send(new AuctionWonMail($auction, $auction->buy_now_price));
+
+        Notification::create([
+            'user_id' => $request->user()->id,
+            'type'    => 'auction_won',
+            'message' => 'Cestitamo! Kupili ste nekretninu ' . $auction->property->title . ' putem Buy Now.',
+            'data'    => [
+                'auction_id' => $auction->id,
+                'amount'     => $auction->buy_now_price,
+            ],
+        ]);
 
         return redirect()
             ->route('auctions.show', $auction)

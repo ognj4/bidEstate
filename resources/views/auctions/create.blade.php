@@ -82,7 +82,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Datum i vreme zavrsetka</label>
                         <input type="datetime-local" name="ends_at" value="{{ old('ends_at') }}"
-                               min="{{ now()->addHour()->format('Y-m-d\TH:i') }}"
+                               min="{{ now()->addMinute()->format('Y-m-d\TH:i') }}"
                                class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-indigo-500">
                         @error('ends_at') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>

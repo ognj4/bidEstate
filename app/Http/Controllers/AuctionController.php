@@ -57,7 +57,7 @@ class AuctionController extends Controller
             'start_price'   => ['required', 'numeric', 'min:1'],
             'min_increment' => ['required', 'numeric', 'min:1'],
             'buy_now_price' => ['nullable', 'numeric', 'gt:start_price'],
-            'ends_at'       => ['required', 'date', 'after:+1 hour'],
+            'ends_at'       => ['required', 'date', 'after:now'],
         ]);
 
         $property = Property::findOrFail($validated['property_id']);

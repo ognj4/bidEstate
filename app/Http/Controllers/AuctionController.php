@@ -69,6 +69,8 @@ class AuctionController extends Controller
             'status'        => 'active',
         ]);
 
+        $property->update(['status' => 'active']);
+
         return redirect()
             ->route('auctions.show', $auction)
             ->with('success', 'Aukcija je uspesno kreirana!');

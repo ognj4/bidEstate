@@ -50,7 +50,7 @@ class PropertyController extends Controller
 
         $property = $request->user()->properties()->create([
             ...$validated,
-            'status' => 'active',
+            'status' => 'draft',
         ]);
 
 

@@ -1,58 +1,190 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# BidEstate
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Online real-estate auction platform built with Laravel.**
 
-## About Laravel
+BidEstate lets sellers list a property and run their own auction for it, while registered buyers compete by placing bids until the deadline. Most property sites only show a fixed price and leave negotiation to private contact. BidEstate moves the whole bidding process onto the site, where every participant sees the offers.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+> Bachelor's thesis project (Academy of Applied Studies Šumadija, Kragujevac).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<!-- Add screenshots here, e.g.:
+![Home page](docs/screenshots/home.png)
+![Auction page](docs/screenshots/auction.png)
+![Admin panel](docs/screenshots/admin.png)
+-->
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+**Listings**
+- Create, edit and delete property listings (apartment, house, land, commercial space)
+- Details: title, description, area (m²), rooms, floor, total floors, city, address, year built
+- Multiple photo upload with an instant preview (Alpine.js) and a primary image
+- A listing with an active auction cannot be deleted
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Auctions**
+- Seller sets a starting price, minimum bid increment, end date/time and an optional **Buy Now** price
+- One active auction per listing at a time
+- Auction page with image gallery, current price, time remaining and the full bid history
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Bidding**
+- Bidding is handled by a Livewire component (`AuctionBidPanel`) with no page reloads
+- Server-side validation: user must be logged in, the auction must be active, sellers cannot bid on their own listing, and each bid must be at least the current price plus the minimum increment
+- Buy Now closes the auction immediately and declares the buyer the winner
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+**Automatic auction closing**
+- A scheduled Laravel Job (`CloseExpiredAuctions`) runs every minute, so auctions close without any user being online
+- It finds the highest bid, sets the winner, updates auction and property statuses, and creates notifications
+- Auctions with no bids are closed without a winner and the listing stays active
 
-## Agentic Development
+**Notifications**
+- In-app notifications for the winner and for the other participants
+- Email notifications via [Resend](https://resend.com) (`AuctionWonMail`, `AuctionLostMail`), which each user can turn off in their profile
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+**Roles and security**
 
-```bash
-composer require laravel/boost --dev
+| Role | Can do |
+| --- | --- |
+| Visitor | Browse active auctions and view auction details |
+| Buyer (`kupac`) | Place bids, save favorites, track own bids on the dashboard |
+| Seller (`prodavac`) | Publish listings, start auctions, track bids and current price |
+| Admin (`admin`) | Manage all users, listings and auctions; change roles; cancel active auctions |
 
-php artisan boost:install
+- Route protection with middleware (`auth`, `EnsureUserIsAdmin`)
+- Per-resource authorization with Policy classes (`PropertyPolicy`, `AuctionPolicy`, `BidPolicy`, `ReviewPolicy`)
+- Hashed passwords (bcrypt) and CSRF protection on all forms
+
+**Admin panel** (`/admin`)
+- Separate dashboard with system totals
+- Manage users, listings and auctions, with a guard that prevents an admin from deleting their own account
+
+## Tech Stack
+
+| Area | Technology |
+| --- | --- |
+| Backend | PHP, Laravel (MVC), Eloquent ORM |
+| Database | MySQL |
+| Frontend | Blade, Livewire (incl. Volt), Alpine.js, Tailwind CSS, Vite |
+| Auth | Laravel Breeze |
+| Background jobs | Laravel Jobs and Scheduler |
+| Email | Resend (`resend/resend-laravel`) |
+
+## Architecture
+
+BidEstate is a monolithic Laravel application organized in layers:
+
+- **Routes**: public, authenticated and admin groups (fixed routes are declared before parameterized ones)
+- **Controllers**: `PropertyController`, `AuctionController`, `BidController`, `FavoriteController`, `NotificationController`, `DashboardController`, `ProfileController`, plus admin controllers
+- **Models**: Eloquent classes with relations and business helpers such as `Auction::isActive()`, `isFinished()` and `minimumNextBid()`
+- **Views**: Blade templates and reusable components (e.g. `<x-auction-card>`)
+- **Livewire**: interactive parts of the UI, most importantly `AuctionBidPanel`
+- **Jobs / Scheduler**: `CloseExpiredAuctions`, run every minute
+
+## Database
+
+Eight tables connected with foreign keys, cascade deletes and unique constraints:
+
+`users` · `properties` · `property_images` · `auctions` · `bids` · `favorites` · `reviews` · `notifications`
+
+```
+users 1──* properties 1──* property_images
+properties 1──* auctions 1──* bids *──1 users
+users *──* properties            (favorites)
+users 1──* reviews *──1 auctions
+users 1──* notifications
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+<!-- Add the database diagram image here:
+![Database schema](docs/screenshots/db-schema.png)
+-->
 
-## Contributing
+## Getting Started
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Requirements
 
-## Code of Conduct
+- PHP 8.2 or newer and [Composer](https://getcomposer.org/)
+- Node.js and npm
+- MySQL
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Installation
 
-## Security Vulnerabilities
+```bash
+# 1. Clone the repository
+git clone https://github.com/ognj4/bidEstate.git
+cd bidEstate
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 2. Install dependencies
+composer install
+npm install
+
+# 3. Environment file and app key
+cp .env.example .env
+php artisan key:generate
+```
+
+### Configure `.env`
+
+Set your database credentials:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=bidestate
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+```
+
+To send auction result emails, configure Resend (optional; without it, in-app notifications still work):
+
+```env
+MAIL_MAILER=resend
+RESEND_API_KEY=your_resend_api_key
+MAIL_FROM_ADDRESS="noreply@yourdomain.com"
+```
+
+### Set up the database and storage
+
+```bash
+php artisan migrate
+php artisan storage:link
+```
+
+### Run the application
+
+Run these in separate terminals:
+
+```bash
+php artisan serve          # app at http://localhost:8000
+npm run dev                # Vite (Tailwind / assets)
+php artisan schedule:work  # runs the scheduler locally (closes expired auctions)
+```
+
+> In production the scheduler is run by the system cron instead of `schedule:work`:
+> `* * * * * cd /path-to-project && php artisan schedule:run >> /dev/null 2>&1`
+
+### Creating an admin
+
+Users choose **buyer** or **seller** at registration. To create an admin, change a user's `role` column to `admin` in the database (for example with `php artisan tinker`):
+
+```php
+\App\Models\User::where('email', 'you@example.com')->update(['role' => 'admin']);
+```
+
+## Roadmap
+
+- [ ] Search and filters (property type, city, price range, area)
+- [ ] User interface for seller reviews (the database table and policy already exist)
+- [ ] Deployment to a public server with cron-based scheduling
+- [ ] Automated tests
+
+## What I Learned
+
+Livewire and the Laravel Scheduler/Jobs were new to me, so I learned them from the official documentation while building the project. Designing the database schema before writing code paid off the most, because the rest of the application fit naturally on top of it.
+
+## Author
+
+**Ognjen Stepanović**
+[LinkedIn](https://www.linkedin.com/in/ognjen-stepanovic/) · [GitHub](https://github.com/ognj4)
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Built with [Laravel](https://laravel.com), which is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
